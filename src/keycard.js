@@ -91,7 +91,7 @@ export const sign = (log) => {
     const addresses = resp.result;
     log(`eth_accounts: ${addresses.join(", ")}`)
     log("calling keycard_signTypedData");
-    ethereum.send("keycard_signTypedData", [addresses[0], params]).then(res => {
+    ethereum.send("keycard_signTypedData", [addresses[0], JSON.stringify(params)]).then(res => {
       log(`then callback`)
     }).catch(err => {
       log(`catch callback`)
