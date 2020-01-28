@@ -93,9 +93,11 @@ export const sign = (log) => {
     log("calling keycard_signTypedData");
     ethereum.send("keycard_signTypedData", [addresses[0], JSON.stringify(params)]).then(res => {
       log(`signature: ${res.result}`)
-    }).catch((err) => {
+    }).catch(err => {
       log(`error: ${err}`)
     })
+  }).catch(err => {
+    log(`error: ${err}`)
   });
 
 }
