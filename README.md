@@ -26,6 +26,8 @@ keycard install -f -a keycard_v3.0.cap
 
 ## Testing the cash applet
 
+Install Status from this PR build: https://ci.status.im/job/status-react/job/prs/job/android/job/PR-9390/
+
 Open the Status browser and go to [https://status-im.github.io/keycard-cash-test-dapp/](https://status-im.github.io/keycard-cash-test-dapp/).
 
 Click the sign button and follow the request screen asking to tap the keycard to sign the typed data.
