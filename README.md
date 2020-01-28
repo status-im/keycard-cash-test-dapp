@@ -11,7 +11,7 @@ Rename the executable and set the right permissions:
 ```
 cd Downloads
 mv keycard-darwin-10.6-amd64 keycard
-chown +x keycard
+chmod +x keycard
 ```
 
 Download the latest [Keycard applet .cap file](https://github.com/status-im/status-keycard/releases).
