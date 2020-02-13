@@ -89,21 +89,21 @@ export const sign = (log) => {
   log("calling net_version")
   ethereum.send("net_version", []).then(resp => {
     const chainId = resp.result;
-    log(`network id: ${chainId}`)
+    log("network id", chainId)
     log("calling eth_accounts")
     ethereum.send("eth_accounts", []).then(resp => {
       const addresses = resp.result;
-      log(`eth_accounts: ${addresses.join(", ")}`)
+      log("eth_accounts", addresses.join(", "))
       log("calling keycard_signTypedData");
       ethereum.send("keycard_signTypedData", [addresses[0], JSON.stringify(params(chainId))]).then(res => {
-        log(`signature: ${res.result}`)
+        log("signature: ", res.result)
       }).catch(err => {
-        log(`error: ${err}`)
+        log("error: ", err)
       })
     }).catch(err => {
-      log(`error: ${err}`)
+      log("error: ", err)
     });
   }).catch(err => {
-    log(`error: ${JSON.stringify(err)}`)
+    log("error: ", err)
   });
 }

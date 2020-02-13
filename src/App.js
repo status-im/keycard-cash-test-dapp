@@ -6,12 +6,21 @@ function App() {
   const [messages, setMessages] = useState([]);
 
   const log = useCallback(
-    (message) => {
+    (message, param) => {
+      let text = message;
+
+      console.log(message);
+      if (param) {
+        console.log(param);
+        text = `${text} ${JSON.stringify(param)}`
+      }
+
+
       setMessages(messages => [
         ...messages,
         {
           time: new Date().toLocaleDateString('default', { hour: 'numeric', minute: 'numeric', second: 'numeric' }),
-          text: `${JSON.stringify(message)}`,
+          text: text,
         },
       ]);
 
