@@ -88,7 +88,7 @@ export const init = (log) => {
 export const sign = (log) => {
   log("calling net_version")
   ethereum.send("net_version", []).then(resp => {
-    const chainId = resp.result;
+    const chainId = parseInt(resp.result);
     log("network id", chainId)
     log("calling eth_accounts")
     ethereum.send("eth_accounts", []).then(resp => {
