@@ -1,8 +1,8 @@
 const ethereum = window.ethereum;
 
-const params = {
+const params = (chainId) => ({
     "domain": {
-        "chainId": 1,
+        "chainId": chainId,
         "name": "Ether Mail",
         "verifyingContract": "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC",
         "version": "1"
@@ -73,7 +73,7 @@ const params = {
             }
         ]
     }
-};
+});
 
 export const init = (log) => {
   if (ethereum) {
@@ -86,18 +86,24 @@ export const init = (log) => {
 }
 
 export const sign = (log) => {
-  log("calling eth_accounts")
-  ethereum.send("eth_accounts", []).then(resp => {
-    const addresses = resp.result;
-    log(`eth_accounts: ${addresses.join(", ")}`)
-    log("calling keycard_signTypedData");
-    ethereum.send("keycard_signTypedData", [addresses[0], JSON.stringify(params)]).then(res => {
-      log(`signature: ${res.result}`)
+  log("calling net_version")
+  ethereum.send("net_version", []).then(resp => {
+    const chainId = resp.result;
+    log(`network id: ${chainId}`)
+    log("calling eth_accounts")
+    ethereum.send("eth_accounts", []).then(resp => {
+      const addresses = resp.result;
+      log(`eth_accounts: ${addresses.join(", ")}`)
+      log("calling keycard_signTypedData");
+      ethereum.send("keycard_signTypedData", [addresses[0], JSON.stringify(params(chainId))]).then(res => {
+        log(`signature: ${res.result}`)
+      }).catch(err => {
+        log(`error: ${err}`)
+      })
     }).catch(err => {
       log(`error: ${err}`)
-    })
+    });
   }).catch(err => {
-    log(`error: ${err}`)
+    log(`error: ${JSON.stringify(err)}`)
   });
-
 }
