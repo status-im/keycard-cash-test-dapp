@@ -1,4 +1,7 @@
+const Web3 = require("web3");
 const ethereum = window.ethereum;
+const MAINNET = 1;
+let web3;
 
 const params = (chainId) => ({
     "domain": {
@@ -78,6 +81,7 @@ const params = (chainId) => ({
 export const init = (log) => {
   if (ethereum) {
     ethereum.enable().then(() => {
+      web3 = new Web3(ethereum);
       log("ethereum enabled");
     }).catch(err => {
       log(JSON.stringify(err.message));
@@ -85,25 +89,34 @@ export const init = (log) => {
   }
 }
 
-export const sign = (log) => {
-  log("calling net_version")
-  ethereum.send("net_version", []).then(resp => {
-    const chainId = parseInt(resp.result);
+export const sign = async (log) => {
+  try {
+    log("calling net_version")
+    const result = await web3.eth.net.getId();
+    const chainId = parseInt(result);
+    if (chainId === MAINNET) {
+      throw("you can't use this test app on mainnet")
+      return
+    }
+
     log("network id", chainId)
     log("calling eth_accounts")
-    ethereum.send("eth_accounts", []).then(resp => {
-      const addresses = resp.result;
-      log("eth_accounts", addresses.join(", "))
-      log("calling keycard_signTypedData");
-      ethereum.send("keycard_signTypedData", [addresses[0], JSON.stringify(params(chainId))]).then(res => {
-        log("signature: ", res.result)
-      }).catch(err => {
-        log("error: ", err)
-      })
-    }).catch(err => {
-      log("error: ", err)
+
+    const accounts = await web3.eth.getAccounts();
+    const account = accounts[0];
+    log("accounts", accounts.join(", "));
+    log("calling keycard_signTypedData");
+
+    const res = await ethereum.send("keycard_signTypedData", [account, JSON.stringify(params(chainId))]);
+    log("signature: ", res.result);
+
+    log("sending test transaction");
+    await web3.eth.sendTransaction({
+      from: account,
+      to: account,
+      value: 0,
     });
-  }).catch(err => {
-    log("error: ", err)
-  });
+  } catch(err) {
+    log("error", err, err.message);
+  }
 }

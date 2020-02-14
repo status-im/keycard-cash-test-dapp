@@ -6,15 +6,14 @@ function App() {
   const [messages, setMessages] = useState([]);
 
   const log = useCallback(
-    (message, param) => {
+    (message, ...params) => {
       let text = message;
-
       console.log(message);
-      if (param) {
-        console.log(param);
-        text = `${text} ${JSON.stringify(param)}`
-      }
 
+      (params || []).forEach(p => {
+        text = `${text} ${JSON.stringify(p)}`
+        console.log(p);
+      })
 
       setMessages(messages => [
         ...messages,
