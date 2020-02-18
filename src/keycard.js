@@ -109,13 +109,6 @@ export const sign = async (log) => {
 
     const res = await ethereum.send("keycard_signTypedData", [account, JSON.stringify(params(chainId))]);
     log("signature: ", res.result);
-
-    log("sending test transaction");
-    await web3.eth.sendTransaction({
-      from: account,
-      to: account,
-      value: 0,
-    });
   } catch(err) {
     log("error", err, err.message);
   }
