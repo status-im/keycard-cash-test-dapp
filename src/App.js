@@ -11,7 +11,9 @@ function App() {
       console.log(message);
 
       (params || []).forEach(p => {
-        text = `${text} ${JSON.stringify(p)}`
+        if (p) {
+          text = `${text} ${JSON.stringify(p)}`
+        }
         console.log(p);
       })
 

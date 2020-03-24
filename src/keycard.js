@@ -1,82 +1,51 @@
 const Web3 = require("web3");
 const ethereum = window.ethereum;
-const MAINNET = 1;
+const ROPSTEN = 3;
 let web3;
 
-const params = (chainId) => ({
-    "domain": {
-        "chainId": chainId,
-        "name": "Ether Mail",
-        "verifyingContract": "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC",
-        "version": "1"
+function params(chainId, amount) {
+  const message = {
+    blockNumber: 1,
+    blockHash: "0x0000000000000000000000000000000000000000",
+    currency: "0x37491bee77c66cb1c4c2be92e4ba3a9eb5487801",
+    to: "0x0000000000000000000000000000000000000000",
+    amount: 1000000000000000000,
+  }
+
+  const domain = [
+    { name: "name", type: "string" },
+    { name: "version", type: "string" },
+    { name: "chainId", type: "uint256" },
+    { name: "verifyingContract", type: "address" }
+  ];
+
+  const payment = [
+    { name: "blockNumber", type: "uint256" },
+    { name: "blockHash", type: "bytes32" },
+    { name: "currency", type: "address" },
+    { name: "amount", type: "uint256" },
+    { name: "to", type: "address" }
+  ];
+
+  const domainData = {
+    name: "KeycardWallet",
+    version: "1",
+    chainId: chainId,
+    verifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC",
+  };
+
+  const data = {
+    types: {
+      EIP712Domain: domain,
+      Payment: payment
     },
-    "message": {
-        "contents": "Hello, Bob!",
-        "amount": "123.04",
-        "currency": "SNT",
-        "from": {
-            "name": "Cow",
-            "wallet": "0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"
-        },
-        "to": {
-            "name": "Bob",
-            "wallet": "0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB"
-        }
-    },
-    "primaryType": "Mail",
-    "types": {
-        "EIP712Domain": [
-            {
-                "name": "name",
-                "type": "string"
-            },
-            {
-                "name": "version",
-                "type": "string"
-            },
-            {
-                "name": "chainId",
-                "type": "uint256"
-            },
-            {
-                "name": "verifyingContract",
-                "type": "address"
-            }
-        ],
-        "Mail": [
-            {
-                "name": "from",
-                "type": "Person"
-            },
-            {
-                "name": "to",
-                "type": "Person"
-            },
-            {
-                "name": "contents",
-                "type": "string"
-            },
-            {
-                "name": "amount",
-                "type": "string"
-            },
-            {
-                "name": "currency",
-                "type": "string"
-            }
-        ],
-        "Person": [
-            {
-                "name": "name",
-                "type": "string"
-            },
-            {
-                "name": "wallet",
-                "type": "address"
-            }
-        ]
-    }
-});
+    primaryType: "Payment",
+    domain: domainData,
+    message: message
+  };
+
+  return data;
+}
 
 export const init = (log) => {
   if (ethereum) {
@@ -94,8 +63,8 @@ export const sign = async (log) => {
     log("calling net_version")
     const result = await web3.eth.net.getId();
     const chainId = parseInt(result);
-    if (chainId === MAINNET) {
-      throw("you can't use this test app on mainnet")
+    if (chainId !== ROPSTEN) {
+      throw("you can use this test app only on ropsten")
       return
     }
 
