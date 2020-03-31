@@ -7,7 +7,7 @@ function params(chainId, amount) {
   const message = {
     blockNumber: 1,
     blockHash: "0x0000000000000000000000000000000000000000",
-    currency: "0x37491bee77c66cb1c4c2be92e4ba3a9eb5487801",
+    currency: "0xc55cf4b03948d7ebc8b9e8bad92643703811d162",
     to: "0x0000000000000000000000000000000000000000",
     amount: 1000000000000000000,
   }
