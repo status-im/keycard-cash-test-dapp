@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import './App.css';
-import { init, sign } from "./keycard";
+import { init, signPayment, signRedeem } from "./keycard";
 
 function App() {
   const [messages, setMessages] = useState([]);
@@ -34,16 +34,25 @@ function App() {
     init(log);
   }, [log]);
 
-  const onSign = (event) => {
+  const onSignPayment = (event) => {
     event.preventDefault();
-    sign(log);
+    signPayment(log);
+  };
+
+  const onSignRedeem = (event) => {
+    event.preventDefault();
+    signRedeem(log);
   };
 
   return (
     <div className="app">
       <div className="header">
-        <button onClick={onSign} className="btn">
-          Sign
+        <button onClick={onSignPayment} className="btn">
+          Sign Payment
+        </button>
+
+        <button onClick={onSignRedeem} className="btn">
+          Sign Redeem
         </button>
       </div>
       <div className="messages">

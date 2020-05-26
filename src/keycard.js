@@ -3,13 +3,13 @@ const ethereum = window.ethereum;
 const ROPSTEN = 3;
 let web3;
 
-function params(chainId, amount) {
+function paymentParams(chainId, amount) {
   const message = {
     blockNumber: 1,
     blockHash: "0x0000000000000000000000000000000000000000",
     currency: "0xc55cf4b03948d7ebc8b9e8bad92643703811d162",
     to: "0x0000000000000000000000000000000000000000",
-    amount: 1000000000000000000,
+    amount: amount,
   }
 
   const domain = [
@@ -47,6 +47,48 @@ function params(chainId, amount) {
   return data;
 }
 
+function redeemParams(chainId, receiver) {
+  const message = {
+    blockNumber: 1,
+    blockHash: "0x0000000000000000000000000000000000000000",
+    code: "0x0000000000000000000000000000000000000000",
+    receiver: receiver,
+  }
+
+  const domain = [
+    { name: "name", type: "string" },
+    { name: "version", type: "string" },
+    { name: "chainId", type: "uint256" },
+    { name: "verifyingContract", type: "address" }
+  ];
+
+  const redeem = [
+    { name: "blockNumber", type: "uint256" },
+    { name: "blockHash", type: "bytes32" },
+    { name: "receiver", type: "address" },
+    { name: "code", type: "bytes32" },
+  ];
+
+  const domainData = {
+    name: "KeycardERC20Bucket",
+    version: "1",
+    chainId: chainId,
+    verifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC",
+  };
+
+  const data = {
+    types: {
+      EIP712Domain: domain,
+      Redeem: redeem,
+    },
+    primaryType: "Redeem",
+    domain: domainData,
+    message: message
+  };
+
+  return data;
+}
+
 export const init = (log) => {
   if (ethereum) {
     ethereum.enable().then(() => {
@@ -58,7 +100,7 @@ export const init = (log) => {
   }
 }
 
-export const sign = async (log) => {
+export const signRedeem = async (log) => {
   try {
     log("calling net_version")
     const result = await web3.eth.net.getId();
@@ -76,7 +118,33 @@ export const sign = async (log) => {
     log("accounts", accounts.join(", "));
     log("calling keycard_signTypedData");
 
-    const res = await ethereum.send("keycard_signTypedData", [account, JSON.stringify(params(chainId))]);
+    const res = await ethereum.send("keycard_signTypedData", JSON.stringify(redeemParams(chainId, account)));
+    log("signature: ", res.result);
+  } catch(err) {
+    log("error", err, err.message);
+  }
+}
+
+export const signPayment = async (log) => {
+  try {
+    log("calling net_version")
+    const result = await web3.eth.net.getId();
+    const chainId = parseInt(result);
+    if (chainId !== ROPSTEN) {
+      throw("you can use this test app only on ropsten")
+      return
+    }
+
+    log("network id", chainId)
+    log("calling eth_accounts")
+
+    const accounts = await web3.eth.getAccounts();
+    const account = accounts[0];
+    log("accounts", accounts.join(", "));
+    log("calling keycard_signTypedData");
+
+    const amount = 1000000000000000000;
+    const res = await ethereum.send("keycard_signTypedData", JSON.stringify(paymentParams(chainId, amount)));
     log("signature: ", res.result);
   } catch(err) {
     log("error", err, err.message);
