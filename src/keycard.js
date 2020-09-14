@@ -1,4 +1,5 @@
-const Web3 = require("web3");
+import { recoverTypedSignature } from 'eth-sig-util';
+import Web3 from "web3";
 const ethereum = window.ethereum;
 const ROPSTEN = 3;
 let web3;
@@ -9,7 +10,7 @@ function paymentParams(chainId, amount) {
     blockHash: "0x0000000000000000000000000000000000000000",
     currency: "0xc55cf4b03948d7ebc8b9e8bad92643703811d162",
     to: "0x0000000000000000000000000000000000000000",
-    amount: amount,
+    amount: "1000000000000000000",
   }
 
   const domain = [
@@ -104,13 +105,13 @@ export const signRedeem = async (log) => {
   try {
     log("calling net_version")
     const result = await web3.eth.net.getId();
-    const chainId = parseInt(result);
-    if (chainId !== ROPSTEN) {
+    const netID = parseInt(result);
+    if (netID !== ROPSTEN) {
       throw("you can use this test app only on ropsten")
       return
     }
 
-    log("network id", chainId)
+    log("network id", netID)
     log("calling eth_accounts")
 
     const accounts = await web3.eth.getAccounts();
@@ -118,8 +119,15 @@ export const signRedeem = async (log) => {
     log("accounts", accounts.join(", "));
     log("calling keycard_signTypedData");
 
-    const res = await ethereum.send("keycard_signTypedData", JSON.stringify(redeemParams(chainId, account)));
-    log("signature: ", res.result);
+    const data = redeemParams(netID, account);
+    const sig = await ethereum.send("keycard_signTypedData", JSON.stringify(data));
+    log("signature: ", sig);
+
+    const signer = recoverTypedSignature({
+      data,
+      sig
+    });
+    log("signer: ", signer);
   } catch(err) {
     log("error", err, err.message);
   }
@@ -129,13 +137,13 @@ export const signPayment = async (log) => {
   try {
     log("calling net_version")
     const result = await web3.eth.net.getId();
-    const chainId = parseInt(result);
-    if (chainId !== ROPSTEN) {
+    const netID = parseInt(result);
+    if (netID !== ROPSTEN) {
       throw("you can use this test app only on ropsten")
       return
     }
 
-    log("network id", chainId)
+    log("network id", netID)
     log("calling eth_accounts")
 
     const accounts = await web3.eth.getAccounts();
@@ -143,9 +151,16 @@ export const signPayment = async (log) => {
     log("accounts", accounts.join(", "));
     log("calling keycard_signTypedData");
 
-    const amount = 1000000000000000000;
-    const res = await ethereum.send("keycard_signTypedData", JSON.stringify(paymentParams(chainId, amount)));
-    log("signature: ", res.result);
+    const amount = "1000000000000000000";
+    const data = paymentParams(netID, amount);
+    const sig = await ethereum.send("keycard_signTypedData", JSON.stringify(data));
+    log("signature: ", sig);
+
+    const signer = recoverTypedSignature({
+      data,
+      sig
+    });
+    log("signer: ", signer);
   } catch(err) {
     log("error", err, err.message);
   }

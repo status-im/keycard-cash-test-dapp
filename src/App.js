@@ -36,11 +36,13 @@ function App() {
 
   const onSignPayment = (event) => {
     event.preventDefault();
+    setMessages([]);
     signPayment(log);
   };
 
   const onSignRedeem = (event) => {
     event.preventDefault();
+    setMessages([]);
     signRedeem(log);
   };
 
