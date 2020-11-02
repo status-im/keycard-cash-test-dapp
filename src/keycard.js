@@ -120,7 +120,10 @@ export const signRedeem = async (log) => {
     log("calling keycard_signTypedData");
 
     const data = redeemParams(netID, account);
-    const sig = await ethereum.send("keycard_signTypedData", JSON.stringify(data));
+    const sig = await ethereum.request({
+      method: "keycard_signTypedData",
+      params: JSON.stringify(data)
+    });
     log("signature: ", sig);
 
     const signer = recoverTypedSignature({
@@ -153,7 +156,10 @@ export const signPayment = async (log) => {
 
     const amount = "1000000000000000000";
     const data = paymentParams(netID, amount);
-    const sig = await ethereum.send("keycard_signTypedData", JSON.stringify(data));
+    const sig = await ethereum.request({
+      method: "keycard_signTypedData",
+      params: JSON.stringify(data),
+    });
     log("signature: ", sig);
 
     const signer = recoverTypedSignature({
