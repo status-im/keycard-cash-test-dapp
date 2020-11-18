@@ -5,17 +5,14 @@ body {
 
 .app {
   word-break: break-word;
-  padding-top: 64px;
 }
 
 .header {
   background: #fff;
   text-align: center;
-  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  padding: 10px 0;
   border-bottom: 4px solid #eee;
 }
 
@@ -25,12 +22,12 @@ body {
   border: 0;
   padding: 6px 24px;
   font-size: 18px;
-  display: inline-block;
+  display: block;
   cursor: pointer;
   box-shadow: 0 3px 1px -2px rgba(0,0,0,.2), 0 2px 2px 0 rgba(0,0,0,.14), 0 1px 5px 0 rgba(0,0,0,.12);
   border-radius: 4px;
   letter-spacing: .02857em;
-  margin: 0 10px;
+  margin: 10px auto;
 }
 
 .btn:focus, .btn:hover, .btn:active {

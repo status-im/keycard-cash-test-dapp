@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import './App.css';
-import { init, signPayment, signRedeem } from "./keycard";
+import { init, signPayment, signRedeem, signGeneric } from "./keycard";
 
 function App() {
   const [messages, setMessages] = useState([]);
@@ -46,6 +46,12 @@ function App() {
     signRedeem(log);
   };
 
+  const onSignGeneric = (event) => {
+    event.preventDefault();
+    setMessages([]);
+    signGeneric(log);
+  };
+
   return (
     <div className="app">
       <div className="header">
@@ -55,6 +61,10 @@ function App() {
 
         <button onClick={onSignRedeem} className="btn">
           Sign Redeem
+        </button>
+
+        <button onClick={onSignGeneric} className="btn">
+          Sign Generic
         </button>
       </div>
       <div className="messages">

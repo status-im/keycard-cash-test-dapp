@@ -90,6 +90,46 @@ function redeemParams(chainId, receiver) {
   return data;
 }
 
+function genericParams(chainId) {
+  const message = {
+    from: "Foo",
+    to: "Bar",
+    text: "Hello World",
+  }
+
+  const domain = [
+    { name: "name", type: "string" },
+    { name: "version", type: "string" },
+    { name: "chainId", type: "uint256" },
+    { name: "verifyingContract", type: "address" }
+  ];
+
+  const payment = [
+    { name: "from", type: "string" },
+    { name: "to", type: "string" },
+    { name: "text", type: "string" },
+  ];
+
+  const domainData = {
+    name: "GenericMessage",
+    version: "1",
+    chainId: chainId,
+    verifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC",
+  };
+
+  const data = {
+    types: {
+      EIP712Domain: domain,
+      Payment: payment
+    },
+    primaryType: "GenericTextMessage",
+    domain: domainData,
+    message: message
+  };
+
+  return data;
+}
+
 export const init = (log) => {
   if (ethereum) {
     ethereum.enable().then(() => {
@@ -156,6 +196,42 @@ export const signPayment = async (log) => {
 
     const amount = "1000000000000000000";
     const data = paymentParams(netID, amount);
+    const sig = await ethereum.request({
+      method: "keycard_signTypedData",
+      params: JSON.stringify(data),
+    });
+    log("signature: ", sig);
+
+    const signer = recoverTypedSignature({
+      data,
+      sig
+    });
+    log("signer: ", signer);
+  } catch(err) {
+    log("error", err, err.message);
+  }
+}
+
+export const signGeneric = async (log) => {
+  try {
+    log("calling net_version")
+    const result = await web3.eth.net.getId();
+    const netID = parseInt(result);
+    if (netID !== ROPSTEN) {
+      throw("you can use this test app only on ropsten")
+      return
+    }
+
+    log("network id", netID)
+    log("calling eth_accounts")
+
+    const accounts = await web3.eth.getAccounts();
+    const account = accounts[0];
+    log("accounts", accounts.join(", "));
+    log("calling keycard_signTypedData");
+
+    const amount = "1000000000000000000";
+    const data = genericParams(netID, amount);
     const sig = await ethereum.request({
       method: "keycard_signTypedData",
       params: JSON.stringify(data),
