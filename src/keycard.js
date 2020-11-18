@@ -104,7 +104,7 @@ function genericParams(chainId) {
     { name: "verifyingContract", type: "address" }
   ];
 
-  const payment = [
+  const genericMessage = [
     { name: "from", type: "string" },
     { name: "to", type: "string" },
     { name: "text", type: "string" },
@@ -120,9 +120,9 @@ function genericParams(chainId) {
   const data = {
     types: {
       EIP712Domain: domain,
-      Payment: payment
+      GenericMessage: genericMessage
     },
-    primaryType: "GenericTextMessage",
+    primaryType: "GenericMessage",
     domain: domainData,
     message: message
   };
