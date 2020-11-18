@@ -230,8 +230,7 @@ export const signGeneric = async (log) => {
     log("accounts", accounts.join(", "));
     log("calling keycard_signTypedData");
 
-    const amount = "1000000000000000000";
-    const data = genericParams(netID, amount);
+    const data = genericParams(netID);
     const sig = await ethereum.request({
       method: "keycard_signTypedData",
       params: JSON.stringify(data),
